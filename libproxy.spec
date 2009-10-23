@@ -1,11 +1,8 @@
-# TODO:
-# - subpackages with plugins (?)
-#
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
 Version:	0.2.3
-Release:	4
+Release:	5
 License:	LGPL v2
 Group:		Libraries
 Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
@@ -68,6 +65,43 @@ libproxy Python bindings.
 %description -n python-libproxy -l pl.UTF-8
 Wiązania libproxy dla Pythona.
 
+
+%package gnome
+Summary:	Plugin for libproxy and gnome
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description gnome
+The libproxy-gnome package contains the libproxy plugin for gnome.
+
+
+%package kde
+Summary:	Plugin for libproxy and kde
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description kde
+The libproxy-kde package contains the libproxy plugin for kde.
+
+
+%package mozjs
+Summary:	Plugin for %{name} and mozjs
+Group:		Libraries
+Requires:	%{name} = %{version}
+
+%description mozjs
+The libproxy-mozjs package contains the libproxy plugin for mozjs.
+
+
+%package webkit
+Summary:	Plugin for %{name} and webkit
+Group:		Libraries
+Requires:	%{name} = %{version}
+
+%description webkit
+The libproxy-webkit package contains the libproxy plugin for webkit.
+
+
 %prep
 %setup -q
 %patch0 -p1
@@ -108,11 +142,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}/%{version}/plugins
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/envvar.so
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/file.so
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/gnome.so
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/kde.so
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/mozjs.so
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/networkmanager.so
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/webkit.so
 
 %files devel
 %defattr(644,root,root,755)
@@ -128,3 +158,15 @@ rm -rf $RPM_BUILD_ROOT
 %files -n python-libproxy
 %defattr(644,root,root,755)
 %{py_sitescriptdir}/*.py[co]
+
+%files gnome
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/gnome.so
+
+%files kde
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/kde.so
+
+%files mozjs
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/mozjs.so
+
+%files webkit
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/webkit.so
