@@ -18,6 +18,8 @@ BuildRequires:	gtk-webkit-devel
 BuildRequires:	libtool
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
+BuildRequires:	python-modules
+BuildRequires:	rpm-pythonprov
 BuildRequires:	xorg-lib-libXmu-devel
 BuildRequires:	xulrunner-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -160,13 +162,17 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/*.py[co]
 
 %files gnome
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/gnome.so
 
 %files kde
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/kde.so
 
 %files mozjs
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/mozjs.so
 
 %files webkit
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/webkit.so
