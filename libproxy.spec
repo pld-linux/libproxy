@@ -10,7 +10,7 @@ Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
 Patch0:		%{name}-dbus.patch
 Patch1:		%{name}-asneeded.patch
 URL:		http://code.google.com/p/libproxy/
-BuildRequires:	GConf2-devel
+BuildRequires:	GConf2-devel >= 2.0
 BuildRequires:	NetworkManager-devel
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
@@ -20,6 +20,7 @@ BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
 BuildRequires:	rpm-pythonprov
+BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXmu-devel
 BuildRequires:	xulrunner-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -67,42 +68,53 @@ libproxy Python bindings.
 %description -n python-libproxy -l pl.UTF-8
 Wiązania libproxy dla Pythona.
 
-
 %package gnome
-Summary:	Plugin for libproxy and gnome
+Summary:	GNOME plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka GNOME dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description gnome
-The libproxy-gnome package contains the libproxy plugin for gnome.
+GNOME (GConf) configuration plugin for libproxy.
 
+%description gnome -l pl.UTF-8
+Wtyczka konfiguracji GNOME (GConf) dla libproxy.
 
 %package kde
-Summary:	Plugin for libproxy and kde
+Summary:	KDE plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka KDE dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description kde
-The libproxy-kde package contains the libproxy plugin for kde.
+KDE configuration plugin for libproxy.
 
+%description kde -l pl.UTF-8
+Wtyczka konfiguracji KDE dla libproxy
 
 %package mozjs
-Summary:	Plugin for %{name} and mozjs
+Summary:	MozJS plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka MozJS dla libproxy
 Group:		Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description mozjs
-The libproxy-mozjs package contains the libproxy plugin for mozjs.
+MozJS (XULrunner/JavaScript) configuration plugin for libproxy.
 
+%description mozjs -l pl.UTF-8
+Wtyczka konfiguracji MozJS (XULrunner/JavaScript) dla libproxy.
 
 %package webkit
-Summary:	Plugin for %{name} and webkit
+Summary:	WebKit plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka WebKit dla libproxy
 Group:		Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description webkit
-The libproxy-webkit package contains the libproxy plugin for webkit.
+WebKit (JavaScriptCore) configuration plugin for libproxy.
 
+%description webkit -l pl.UTF-8
+Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 
 %prep
 %setup -q
