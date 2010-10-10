@@ -1,3 +1,7 @@
+#
+# Conditional build:
+%bcond_without	webkit	# WebKit plugin
+#
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
@@ -5,6 +9,7 @@ Version:	0.2.3
 Release:	6
 License:	LGPL v2
 Group:		Libraries
+#Source0Download: http://code.google.com/p/libproxy/downloads/list
 Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
 # Source0-md5:	86b635e1eb2d665cfbef4c6134fe6604
 Patch0:		%{name}-dbus.patch
@@ -14,7 +19,7 @@ BuildRequires:	GConf2-devel >= 2.0
 BuildRequires:	NetworkManager-devel
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
-BuildRequires:	gtk-webkit-devel
+%{?with_webkit:BuildRequires:	gtk-webkit-devel}
 BuildRequires:	libtool
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
@@ -67,6 +72,18 @@ libproxy Python bindings.
 
 %description -n python-libproxy -l pl.UTF-8
 Wiązania libproxy dla Pythona.
+
+%package networkmanager
+Summary:	NetworkManager plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka NetworkManager dla libproxy
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description networkmanager
+NetworkManager configuration plugin for libproxy.
+
+%description networkmanager -l pl.UTF-8
+Wtyczka konfiguracji NetworkManager dla libproxy.
 
 %package gnome
 Summary:	GNOME plugin for libproxy
@@ -126,7 +143,8 @@ Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 %{__aclocal}
 %{__autoconf}
 %{__automake}
-%configure
+%configure \
+	%{!?with_webkit:--without-webkit}
 %{__make}
 
 %install
@@ -156,13 +174,12 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}/%{version}/plugins
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/envvar.so
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/file.so
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/networkmanager.so
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libproxy.so
 %{_libdir}/libproxy.la
-%{_includedir}/*.h
+%{_includedir}/proxy.h
 %{_pkgconfigdir}/libproxy-1.0.pc
 
 %files static
@@ -171,7 +188,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n python-libproxy
 %defattr(644,root,root,755)
-%{py_sitescriptdir}/*.py[co]
+%{py_sitescriptdir}/libproxy.py[co]
+
+%files networkmanager
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/networkmanager.so
 
 %files gnome
 %defattr(644,root,root,755)
@@ -185,6 +206,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/mozjs.so
 
+%if %{with webkit}
 %files webkit
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/webkit.so
+%endif
