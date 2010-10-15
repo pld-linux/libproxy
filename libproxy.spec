@@ -1,6 +1,7 @@
 #
 # Conditional build:
-%bcond_without	webkit	# WebKit plugin
+%bcond_without	webkit	    # WebKit plugin
+%bcond_without	xulrunner   # xulrunner plugin
 #
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
@@ -27,7 +28,7 @@ BuildRequires:	python-modules
 BuildRequires:	rpm-pythonprov
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXmu-devel
-BuildRequires:	xulrunner-devel
+%{?with_xulrunner:BuildRequires:	xulrunner-devel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -144,7 +145,8 @@ Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 %{__autoconf}
 %{__automake}
 %configure \
-	%{!?with_webkit:--without-webkit}
+	%{!?with_webkit:--without-webkit} \
+	%{!?with_xulrunner:--without-xulrunner}
 %{__make}
 
 %install
@@ -202,9 +204,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/kde.so
 
+%if %{with xulrunner}
 %files mozjs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/mozjs.so
+%endif
 
 %if %{with webkit}
 %files webkit
