@@ -1,31 +1,39 @@
 #
 # Conditional build:
-%bcond_without	webkit	    # WebKit plugin
-%bcond_without	xulrunner   # xulrunner plugin
+%bcond_without	kde		# KDE4 plugin
+%bcond_without	webkit		# WebKit plugin
+%bcond_without	xulrunner	# xulrunner plugin
 #
+%include	/usr/lib/rpm/macros.perl
+%include	/usr/lib/rpm/macros.mono
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.2.3
-Release:	6
-License:	LGPL v2
+Version:	0.4.6
+Release:	1
+License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: http://code.google.com/p/libproxy/downloads/list
 Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
-# Source0-md5:	86b635e1eb2d665cfbef4c6134fe6604
-Patch0:		%{name}-dbus.patch
-Patch1:		%{name}-asneeded.patch
+# Source0-md5:	199c6b120baf1f7258a55f38d5ec74f5
+Patch0:		%{name}-pac-modules.patch
+Patch1:		%{name}-pythondir.patch
 URL:		http://code.google.com/p/libproxy/
 BuildRequires:	GConf2-devel >= 2.0
 BuildRequires:	NetworkManager-devel
-BuildRequires:	autoconf >= 2.61
-BuildRequires:	automake
+BuildRequires:	cmake >= 2.6
 %{?with_webkit:BuildRequires:	gtk-webkit-devel}
-BuildRequires:	libtool
+%{?with_kde:BuildRequires:	kde4-kdelibs-devel}
+BuildRequires:	libstdc++-devel
+BuildRequires:	mono-csharp
+BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
+BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
+BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpmbuild(monoautodeps)
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXmu-devel
 %{?with_xulrunner:BuildRequires:	xulrunner-devel}
@@ -42,6 +50,8 @@ Summary:	Header files for libproxy library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libproxy
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	libstdc++-devel
+Obsoletes:	libproxy-static
 
 %description devel
 Header files for libproxy library.
@@ -49,17 +59,41 @@ Header files for libproxy library.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki libproxy.
 
-%package static
-Summary:	Static libproxy library
-Summary(pl.UTF-8):	Statyczna biblioteka libproxy
+%package -n dotnet-libproxy-sharp
+Summary:	Libproxy# - libproxy .NET bindings
+Summary(pl.UTF-8):	Libproxy# - wiązania libproxy dla .NET
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description -n dotnet-libproxy-sharp
+Libproxy# - libproxy .NET bindings.
+
+%description -n dotnet-libproxy-sharp -l pl.UTF-8
+Libproxy# - wiązania libproxy dla .NET.
+
+%package -n dotnet-libproxy-sharp-devel
+Summary:	libproxy .NET bindings - development files
+Summary(pl.UTF-8):	Wiązania libproxy dla .NET - pliki programistyczne
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
+Requires:	dotnet-libproxy-sharp = %{version}-%{release}
 
-%description static
-Static libproxy library.
+%description -n dotnet-libproxy-sharp-devel
+Development files for libproxy .NET bindings.
 
-%description static -l pl.UTF-8
-Statyczna biblioteka libproxy.
+%description -n dotnet-libproxy-sharp-devel -l pl.UTF-8
+Pliki programistyczne wiązań libproxy dla .NET.
+
+%package -n perl-Net-Libproxy
+Summary:	libproxy Perl bindings
+Summary(pl.UTF-8):	Wiązania libproxy dla Perla
+Group:		Development/Languages/Perl
+Requires:	%{name} = %{version}-%{release}
+
+%description -n perl-Net-Libproxy
+libproxy Perl bindings.
+
+%description -n perl-Net-Libproxy -l pl.UTF-8
+Wiązania libproxy dla Perla.
 
 %package -n python-libproxy
 Summary:	libproxy Python bindings
@@ -73,6 +107,18 @@ libproxy Python bindings.
 
 %description -n python-libproxy -l pl.UTF-8
 Wiązania libproxy dla Pythona.
+
+%package -n vala-libproxy
+Summary:	Vala bindings for libproxy API
+Summary(pl.UTF-8):	Wiązania API libproxy dla języka Vala
+Group:		Development/Languages
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description -n vala-libproxy
+Vala bindings for libproxy API.
+
+%description -n vala-libproxy -l pl.UTF-8
+Wiązania API libproxy dla języka Vala.
 
 %package networkmanager
 Summary:	NetworkManager plugin for libproxy
@@ -140,19 +186,30 @@ Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 %patch1 -p1
 
 %build
-%{__libtoolize}
-%{__aclocal}
-%{__autoconf}
-%{__automake}
-%configure \
-	%{!?with_webkit:--without-webkit} \
-	%{!?with_xulrunner:--without-xulrunner}
+install -d build
+cd build
+%cmake .. \
+	-DCMAKE_BUILD_TYPE=%{!?debug:Release}%{?debug:Debug} \
+	-DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG" \
+	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
+	-DCMAKE_VERBOSE_MAKEFILE=ON \
+	-DLIB_INSTALL_DIR=%{_libdir} \
+	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
+%if "%{_lib}" == "lib64"
+	-DLIB_SUFFIX=64 \
+%endif
+	-DPERL_VENDORINSTALL=ON \
+	-DWITH_DOTNET=ON \
+	%{!?with_xulrunner:-DWITH_MOZJS=OFF} \
+	-DWITH_VALA=ON \
+	%{!?with_webkit:-DWITH_WEBKIT=OFF}
+
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
+%{__make} -C build install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
@@ -167,51 +224,71 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README
+%doc AUTHORS ChangeLog NEWS README
 %attr(755,root,root) %{_bindir}/proxy
+%attr(755,root,root) %{_libdir}/libmodman.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libmodman.so.1
 %attr(755,root,root) %{_libdir}/libproxy.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libproxy.so.0
+%attr(755,root,root) %ghost %{_libdir}/libproxy.so.1
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
-%dir %{_libdir}/%{name}/%{version}/plugins
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/envvar.so
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/file.so
+%attr(755,root,root) %{_libdir}/%{name}/pxgconf
+%dir %{_libdir}/%{name}/%{version}/modules
 
 %files devel
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libmodman.so
 %attr(755,root,root) %{_libdir}/libproxy.so
-%{_libdir}/libproxy.la
 %{_includedir}/proxy.h
 %{_pkgconfigdir}/libproxy-1.0.pc
+%{_datadir}/cmake/Modules/Findlibproxy.cmake
 
-%files static
+%files -n dotnet-libproxy-sharp
 %defattr(644,root,root,755)
-%{_libdir}/libproxy.a
+%{_prefix}/lib/mono/gac/libproxy-sharp
+%{_prefix}/lib/mono/libproxy-sharp
+
+%files -n dotnet-libproxy-sharp-devel
+%defattr(644,root,root,755)
+%{_prefix}/lib/mono/libproxy-sharp
+%{_pkgconfigdir}/libproxy-sharp-1.0.pc
+
+%files -n perl-Net-Libproxy
+%defattr(644,root,root,755)
+%{perl_vendorarch}/Net/Libproxy.pm
+%dir %{perl_vendorarch}/auto/Net/Libproxy
+%attr(755,root,root) %{perl_vendorarch}/auto/Net/Libproxy/Libproxy.so
 
 %files -n python-libproxy
 %defattr(644,root,root,755)
 %{py_sitescriptdir}/libproxy.py[co]
 
+%files -n vala-libproxy
+%defattr(644,root,root,755)
+%{_datadir}/vala/vapi/libproxy-1.0.vapi
+
 %files networkmanager
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/networkmanager.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/network_networkmanager.so
 
 %files gnome
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/gnome.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_gnome.so
 
+%if %{with kde}
 %files kde
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/kde.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_kde4.so
+%endif
 
 %if %{with xulrunner}
 %files mozjs
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/mozjs.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/pacrunner_mozjs.so
 %endif
 
 %if %{with webkit}
 %files webkit
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/plugins/webkit.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/pacrunner_webkit.so
 %endif
