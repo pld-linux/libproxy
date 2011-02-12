@@ -21,6 +21,7 @@ Patch1:		%{name}-pythondir.patch
 URL:		http://code.google.com/p/libproxy/
 BuildRequires:	GConf2-devel >= 2.0
 BuildRequires:	NetworkManager-devel
+%{?with_kde:BuildRequires:	automoc4}
 BuildRequires:	cmake >= 2.6
 %{?with_webkit:BuildRequires:	gtk-webkit-devel}
 %{?with_kde:BuildRequires:	kde4-kdelibs-devel}
@@ -30,6 +31,10 @@ BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
+%if %{with kde}
+BuildRequires:	qt4-build
+BuildRequires:	qt4-qmake
+%endif
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.268
