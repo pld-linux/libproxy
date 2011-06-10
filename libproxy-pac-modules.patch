@@ -1,12 +1,12 @@
 Always build pacrunners as separate modules, not libproxy builtins
---- libproxy-0.4.6/libproxy/cmake/modules.cmk.orig	2010-09-01 22:23:34.000000000 +0200
-+++ libproxy-0.4.6/libproxy/cmake/modules.cmk	2010-11-15 08:54:24.659099937 +0100
-@@ -17,10 +17,7 @@
+--- libproxy-0.4.7/libproxy/cmake/modules.cmk.orig	2011-06-06 23:44:37.000000000 +0200
++++ libproxy-0.4.7/libproxy/cmake/modules.cmk	2011-06-10 14:25:54.438874361 +0200
+@@ -19,10 +19,7 @@
  include(cmake/modules/pacrunner_webkit.cmk)
  
  # Build the pacrunner into libproxy unless we are building for multiple engines
 -set(BIPR 1)
--if(MOZJS_FOUND AND WEBKIT_FOUND)
+-if((MOZJS_FOUND AND WEBKIT_FOUND) OR (MOZJS_FOUND AND NATUS_FOUND) OR (WEBKIT_FOUND AND NATUS_FOUND))
 -  set(BIPR 0)
 -endif()
 +set(BIPR 0)

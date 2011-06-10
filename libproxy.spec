@@ -1,3 +1,4 @@
+# TODO: libnatus-based pacrunner
 #
 # Conditional build:
 %bcond_without	kde		# KDE4 plugin
@@ -9,22 +10,22 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.6
+Version:	0.4.7
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: http://code.google.com/p/libproxy/downloads/list
 Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
-# Source0-md5:	199c6b120baf1f7258a55f38d5ec74f5
+# Source0-md5:	509e03a488a61cd62bfbaf3ab6a2a7a5
 Patch0:		%{name}-pac-modules.patch
-Patch1:		%{name}-pythondir.patch
 URL:		http://code.google.com/p/libproxy/
-BuildRequires:	GConf2-devel >= 2.0
 BuildRequires:	NetworkManager-devel
 %{?with_kde:BuildRequires:	automoc4}
 BuildRequires:	cmake >= 2.6
-%{?with_webkit:BuildRequires:	gtk-webkit-devel}
+BuildRequires:	glib2-devel >= 1:2.26
+%{?with_webkit:BuildRequires:	gtk-webkit3-devel}
 %{?with_kde:BuildRequires:	kde4-kdelibs-devel}
+BuildRequires:	libmodman-devel >= 2
 BuildRequires:	libstdc++-devel
 BuildRequires:	mono-csharp
 BuildRequires:	perl-devel >= 1:5.8.0
@@ -142,6 +143,7 @@ Summary:	GNOME plugin for libproxy
 Summary(pl.UTF-8):	Wtyczka GNOME dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	glib2 >= 1:2.26
 
 %description gnome
 GNOME (GConf) configuration plugin for libproxy.
@@ -188,26 +190,20 @@ Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 install -d build
 cd build
 %cmake .. \
-	-DCMAKE_BUILD_TYPE=%{!?debug:Release}%{?debug:Debug} \
-	-DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG" \
-	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
-	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DLIB_INSTALL_DIR=%{_libdir} \
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
-%if "%{_lib}" == "lib64"
-	-DLIB_SUFFIX=64 \
-%endif
+	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
 	-DWITH_DOTNET=ON \
 	%{!?with_xulrunner:-DWITH_MOZJS=OFF} \
 	-DWITH_VALA=ON \
-	%{!?with_webkit:-DWITH_WEBKIT=OFF}
+	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
+	%{?with_webkit:-DWITH_WEBKIT3=ON}
 
 %{__make}
 
@@ -231,18 +227,15 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README
 %attr(755,root,root) %{_bindir}/proxy
-%attr(755,root,root) %{_libdir}/libmodman.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libmodman.so.1
 %attr(755,root,root) %{_libdir}/libproxy.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libproxy.so.1
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
-%attr(755,root,root) %{_libdir}/%{name}/pxgconf
+%attr(755,root,root) %{_libdir}/%{name}/pxgsettings
 %dir %{_libdir}/%{name}/%{version}/modules
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libmodman.so
 %attr(755,root,root) %{_libdir}/libproxy.so
 %{_includedir}/proxy.h
 %{_pkgconfigdir}/libproxy-1.0.pc
@@ -278,7 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files gnome
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_gnome.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_gnome3.so
 
 %if %{with kde}
 %files kde
