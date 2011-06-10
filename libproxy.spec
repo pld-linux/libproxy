@@ -231,7 +231,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libproxy.so.1
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
-%attr(755,root,root) %{_libdir}/%{name}/pxgsettings
 %dir %{_libdir}/%{name}/%{version}/modules
 
 %files devel
@@ -272,6 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 %files gnome
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_gnome3.so
+%attr(755,root,root) %{_libdir}/%{name}/pxgsettings
 
 %if %{with kde}
 %files kde
