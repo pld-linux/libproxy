@@ -1,4 +1,4 @@
-# TODO: libnatus-based pacrunner
+# TODO: natus-based pacrunner (doesn't build with natus 0.2.1)
 #
 # Conditional build:
 %bcond_without	kde		# KDE4 plugin
