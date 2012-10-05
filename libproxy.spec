@@ -1,29 +1,34 @@
-# TODO: natus-based pacrunner (doesn't build with natus 0.2.1)
+# TODO:
+# - natus-based pacrunner (doesn't build with natus 0.2.1)
+# - ruby binding (not finished as of 0.4.8 - no buildsystem)
 #
 # Conditional build:
-%bcond_without	kde		# KDE4 plugin
-%bcond_without	webkit		# WebKit plugin
-%bcond_without	xulrunner	# xulrunner plugin
+%bcond_without	kde		# KDE4 config plugin
+%bcond_without	mozjs		# MozJS pacrunner plugin
+%bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
+%bcond_without	webkit		# WebKit pacrunner plugin
 #
 %include	/usr/lib/rpm/macros.perl
 %include	/usr/lib/rpm/macros.mono
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.7
-Release:	2
+Version:	0.4.8
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: http://code.google.com/p/libproxy/downloads/list
 Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
-# Source0-md5:	509e03a488a61cd62bfbaf3ab6a2a7a5
+# Source0-md5:	b7d0c7b4f849895fbf1d1b5fb720b296
 Patch0:		%{name}-pac-modules.patch
+Patch1:		%{name}-mozjs.patch
 URL:		http://code.google.com/p/libproxy/
 BuildRequires:	NetworkManager-devel
 %{?with_kde:BuildRequires:	automoc4}
 BuildRequires:	cmake >= 2.6
 BuildRequires:	glib2-devel >= 1:2.26
-%{?with_webkit:BuildRequires:	gtk-webkit3-devel}
+%{?with_webkit:BuildRequires:	gtk-webkit3-devel >= 1.5.0}
+%{?with_mozjs:BuildRequires:	js185-devel}
 %{?with_kde:BuildRequires:	kde4-kdelibs-devel}
 BuildRequires:	libmodman-devel >= 2
 BuildRequires:	libstdc++-devel
@@ -40,9 +45,9 @@ BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	rpmbuild(monoautodeps)
+BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXmu-devel
-%{?with_xulrunner:BuildRequires:	xulrunner-devel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -180,6 +185,7 @@ Summary:	WebKit plugin for libproxy
 Summary(pl.UTF-8):	Wtyczka WebKit dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	gtk-webkit3 >= 1.5.0
 
 %description webkit
 WebKit (JavaScriptCore) configuration plugin for libproxy.
@@ -190,6 +196,11 @@ Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+
+%if %{without natus}
+echo 'set(NATUS_FOUND 0)' > libproxy/cmake/modules/pacrunner_natus.cmk
+%endif
 
 %build
 install -d build
@@ -200,7 +211,7 @@ cd build
 	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
 	-DWITH_DOTNET=ON \
-	%{!?with_xulrunner:-DWITH_MOZJS=OFF} \
+	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
 	-DWITH_VALA=ON \
 	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
 	%{?with_webkit:-DWITH_WEBKIT3=ON}
@@ -279,7 +290,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_kde4.so
 %endif
 
-%if %{with xulrunner}
+%if %{with mozjs}
 %files mozjs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/pacrunner_mozjs.so
