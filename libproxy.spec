@@ -254,7 +254,6 @@ rm -rf $RPM_BUILD_ROOT
 %files -n dotnet-libproxy-sharp
 %defattr(644,root,root,755)
 %{_prefix}/lib/mono/gac/libproxy-sharp
-%{_prefix}/lib/mono/libproxy-sharp
 
 %files -n dotnet-libproxy-sharp-devel
 %defattr(644,root,root,755)
