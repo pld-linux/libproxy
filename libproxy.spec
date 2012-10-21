@@ -13,13 +13,13 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.9
+Version:	0.4.10
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: http://code.google.com/p/libproxy/downloads/list
 Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
-# Source0-md5:	cdbe895f21d18a2fd252230d3ec1a105
+# Source0-md5:	af5d578df764996400eea8bd5b00af8d
 Patch0:		%{name}-pac-modules.patch
 Patch1:		%{name}-mozjs.patch
 URL:		http://code.google.com/p/libproxy/
