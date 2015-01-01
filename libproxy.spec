@@ -7,6 +7,7 @@
 %bcond_without	mozjs		# MozJS pacrunner plugin
 %bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
 %bcond_without	webkit		# WebKit pacrunner plugin
+%bcond_without	mono		# Mono C# bindings
 #
 %include	/usr/lib/rpm/macros.perl
 %include	/usr/lib/rpm/macros.mono
@@ -28,11 +29,11 @@ BuildRequires:	NetworkManager-devel
 BuildRequires:	cmake >= 2.6
 BuildRequires:	glib2-devel >= 1:2.26
 %{?with_webkit:BuildRequires:	gtk-webkit3-devel >= 1.5.0}
-%{?with_mozjs:BuildRequires:	js185-devel}
+%{?with_mozjs:BuildRequires:	js187-devel}
 %{?with_kde:BuildRequires:	kde4-kdelibs-devel}
 BuildRequires:	libmodman-devel >= 2
 BuildRequires:	libstdc++-devel
-BuildRequires:	mono-csharp
+%{?with_mono:BuildRequires:	mono-csharp}
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
@@ -210,7 +211,7 @@ cd build
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
 	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
-	-DWITH_DOTNET=ON \
+	%{?with_mono:-DWITH_DOTNET=ON} \
 	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
 	-DWITH_VALA=ON \
 	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
@@ -251,6 +252,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/libproxy-1.0.pc
 %{_datadir}/cmake/Modules/Findlibproxy.cmake
 
+%if %{with mono}
 %files -n dotnet-libproxy-sharp
 %defattr(644,root,root,755)
 %{_prefix}/lib/mono/gac/libproxy-sharp
@@ -259,6 +261,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_prefix}/lib/mono/libproxy-sharp
 %{_pkgconfigdir}/libproxy-sharp-1.0.pc
+%endif
 
 %files -n perl-Net-Libproxy
 %defattr(644,root,root,755)

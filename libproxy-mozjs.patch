@@ -5,7 +5,7 @@
    option(WITH_MOZJS "Search for MOZJS package" ON)
    if (WITH_MOZJS)
 -    pkg_search_module(MOZJS mozjs185>=1.8.5)
-+    pkg_search_module(MOZJS mozjs185>=1.0.0)
++    pkg_search_module(MOZJS mozjs187>=1.0.0)
      if(MOZJS_FOUND)
        include_directories(${MOZJS_INCLUDE_DIRS})
        link_directories(${MOZJS_LIBRARY_DIRS})
