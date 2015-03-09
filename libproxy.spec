@@ -9,6 +9,9 @@
 %bcond_without	webkit		# WebKit pacrunner plugin
 %bcond_without	mono		# Mono C# bindings
 #
+%ifarch x32
+%undefine	with_mono
+%endif
 %include	/usr/lib/rpm/macros.perl
 %include	/usr/lib/rpm/macros.mono
 Summary:	Library for automatic proxy configuration management
