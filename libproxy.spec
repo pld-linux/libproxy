@@ -18,7 +18,7 @@ Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
 Version:	0.4.11
-Release:	8
+Release:	9
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: http://code.google.com/p/libproxy/downloads/list
@@ -214,6 +214,7 @@ cd build
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
 	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
+	-DPYTHON_SITEPKG_DIR=%{py_sitescriptdir} \
 	%{?with_mono:-DWITH_DOTNET=ON} \
 	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
 	-DWITH_VALA=ON \
