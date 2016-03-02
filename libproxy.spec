@@ -3,7 +3,7 @@
 # - ruby binding (not finished as of 0.4.8 - no buildsystem)
 #
 # Conditional build:
-%bcond_without	kde		# KDE4 config plugin
+%bcond_without	kde		# KDE 4/5 config plugin
 %bcond_without	mozjs		# MozJS pacrunner plugin
 %bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
 %bcond_without	webkit		# WebKit pacrunner plugin
@@ -17,22 +17,23 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.11
-Release:	9
+Version:	0.4.12
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
-#Source0Download: http://code.google.com/p/libproxy/downloads/list
-Source0:	http://libproxy.googlecode.com/files/%{name}-%{version}.tar.gz
-# Source0-md5:	3cd1ae2a4abecf44b3f24d6639d2cd84
+#Source0Download: https://github.com/libproxy/libproxy/releases
+Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	258d89cc052e0a3c09aa1f42d7f93045
 Patch0:		%{name}-pac-modules.patch
 Patch1:		%{name}-mozjs.patch
-URL:		http://code.google.com/p/libproxy/
+URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	NetworkManager-devel
 %{?with_kde:BuildRequires:	automoc4}
 BuildRequires:	cmake >= 2.6
 BuildRequires:	glib2-devel >= 1:2.26
 %{?with_webkit:BuildRequires:	gtk-webkit3-devel >= 1.5.0}
 %{?with_mozjs:BuildRequires:	js187-devel}
+# or kf5-conf kreadconfig5
 %{?with_kde:BuildRequires:	kde4-kdelibs-devel}
 BuildRequires:	libmodman-devel >= 2
 BuildRequires:	libstdc++-devel
@@ -215,7 +216,7 @@ cd build
 	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
 	-DPYTHON_SITEPKG_DIR=%{py_sitescriptdir} \
-	%{?with_mono:-DWITH_DOTNET=ON} \
+	%{?with_mono:-DWITH_DOTNET=ON -DGMCS_EXECUTABLE=/usr/bin/mcs} \
 	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
 	-DWITH_VALA=ON \
 	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
@@ -293,7 +294,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with kde}
 %files kde
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_kde4.so
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_kde.so
 %endif
 
 %if %{with mozjs}
