@@ -8,7 +8,7 @@
 %bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
 %bcond_without	webkit		# WebKit pacrunner plugin
 %bcond_without	mono		# Mono C# bindings
-#
+
 %ifarch x32
 %undefine	with_mono
 %endif
@@ -18,7 +18,7 @@ Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
 Version:	0.4.12
-Release:	1
+Release:	2
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
@@ -129,6 +129,9 @@ Summary:	Vala bindings for libproxy API
 Summary(pl.UTF-8):	Wiązania API libproxy dla języka Vala
 Group:		Development/Languages
 Requires:	%{name}-devel = %{version}-%{release}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description -n vala-libproxy
 Vala bindings for libproxy API.
