@@ -17,24 +17,21 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.12
-Release:	2
+Version:	0.4.13
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
 Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	258d89cc052e0a3c09aa1f42d7f93045
+# Source0-md5:	de293bb311f185a2ffa3492700a694c2
 Patch0:		%{name}-pac-modules.patch
 Patch1:		%{name}-mozjs.patch
 URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	NetworkManager-devel
-%{?with_kde:BuildRequires:	automoc4}
 BuildRequires:	cmake >= 2.6
 BuildRequires:	glib2-devel >= 1:2.26
-%{?with_webkit:BuildRequires:	gtk-webkit3-devel >= 1.5.0}
+%{?with_webkit:BuildRequires:	gtk-webkit4-devel >= 2.6}
 %{?with_mozjs:BuildRequires:	js187-devel}
-# or kf5-conf kreadconfig5
-%{?with_kde:BuildRequires:	kde4-kdelibs-devel}
 BuildRequires:	libmodman-devel >= 2
 BuildRequires:	libstdc++-devel
 %{?with_mono:BuildRequires:	mono-csharp}
@@ -42,10 +39,6 @@ BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
-%if %{with kde}
-BuildRequires:	qt4-build
-BuildRequires:	qt4-qmake
-%endif
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -169,6 +162,7 @@ Summary:	KDE plugin for libproxy
 Summary(pl.UTF-8):	Wtyczka KDE dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
+#Requires:	kreadconfig (KDE4) or kreadconfig5 (KF5)
 
 %description kde
 KDE configuration plugin for libproxy.
@@ -193,7 +187,7 @@ Summary:	WebKit plugin for libproxy
 Summary(pl.UTF-8):	Wtyczka WebKit dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	gtk-webkit3 >= 1.5.0
+Requires:	gtk-webkit4 >= 2.6
 
 %description webkit
 WebKit (JavaScriptCore) configuration plugin for libproxy.
@@ -220,6 +214,7 @@ cd build
 	-DPERL_VENDORINSTALL=ON \
 	-DPYTHON_SITEPKG_DIR=%{py_sitescriptdir} \
 	%{?with_mono:-DWITH_DOTNET=ON -DGMCS_EXECUTABLE=/usr/bin/mcs} \
+	%{!?with_kde:-DWITH_KDE=OFF} \
 	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
 	-DWITH_VALA=ON \
 	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
