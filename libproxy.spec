@@ -17,21 +17,20 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.13
-Release:	4
+Version:	0.4.15
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
 Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	de293bb311f185a2ffa3492700a694c2
+# Source0-md5:	21ebe5b4ea2a04f5f468bf5d08c40d2c
 Patch0:		%{name}-pac-modules.patch
-Patch1:		%{name}-mozjs.patch
 URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	NetworkManager-devel
 BuildRequires:	cmake >= 2.6
 BuildRequires:	glib2-devel >= 1:2.26
 %{?with_webkit:BuildRequires:	gtk-webkit4-devel >= 2.6}
-%{?with_mozjs:BuildRequires:	js187-devel}
+%{?with_mozjs:BuildRequires:	mozjs38-devel}
 BuildRequires:	libmodman-devel >= 2
 BuildRequires:	libstdc++-devel
 %{?with_mono:BuildRequires:	mono-csharp}
@@ -39,6 +38,8 @@ BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
+BuildRequires:	python3-devel
+BuildRequires:	python3-modules
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -116,6 +117,19 @@ libproxy Python bindings.
 
 %description -n python-libproxy -l pl.UTF-8
 Wiązania libproxy dla Pythona.
+
+%package -n python3-libproxy
+Summary:	libproxy Python 3 bindings
+Summary(pl.UTF-8):	Wiązania libproxy dla Pythona 3
+Group:		Libraries/Python
+# uses libproxy shared library
+Requires:	%{name} = %{version}-%{release}
+
+%description -n python3-libproxy
+libproxy Python 3 bindings.
+
+%description -n python3-libproxy -l pl.UTF-8
+Wiązania libproxy dla Pythona 3.
 
 %package -n vala-libproxy
 Summary:	Vala bindings for libproxy API
@@ -198,7 +212,6 @@ Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %if %{without natus}
 echo 'set(NATUS_FOUND 0)' > libproxy/cmake/modules/pacrunner_natus.cmk
@@ -212,7 +225,8 @@ cd build
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
 	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
-	-DPYTHON_SITEPKG_DIR=%{py_sitescriptdir} \
+	-DPYTHON2_SITEPKG_DIR=%{py_sitescriptdir} \
+	-DPYTHON3_SITEPKG_DIR=%{py3_sitescriptdir} \
 	%{?with_mono:-DWITH_DOTNET=ON -DGMCS_EXECUTABLE=/usr/bin/mcs} \
 	%{!?with_kde:-DWITH_KDE=OFF} \
 	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
@@ -275,6 +289,10 @@ rm -rf $RPM_BUILD_ROOT
 %files -n python-libproxy
 %defattr(644,root,root,755)
 %{py_sitescriptdir}/libproxy.py[co]
+
+%files -n python3-libproxy
+%defattr(644,root,root,755)
+%{py3_sitescriptdir}/libproxy.py
 
 %files -n vala-libproxy
 %defattr(644,root,root,755)
