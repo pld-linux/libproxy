@@ -18,7 +18,7 @@ Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
 Version:	0.4.15
-Release:	1
+Release:	2
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
@@ -32,17 +32,17 @@ BuildRequires:	glib2-devel >= 1:2.26
 %{?with_webkit:BuildRequires:	gtk-webkit4-devel >= 2.6}
 %{?with_mozjs:BuildRequires:	mozjs38-devel}
 BuildRequires:	libmodman-devel >= 2
-BuildRequires:	libstdc++-devel
+BuildRequires:	libstdc++-devel >= 6:4.7
 %{?with_mono:BuildRequires:	mono-csharp}
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
-BuildRequires:	python-modules
-BuildRequires:	python3-devel
-BuildRequires:	python3-modules
+BuildRequires:	python-modules >= 1:2.5
+BuildRequires:	python3-devel >= 1:3.2
+BuildRequires:	python3-modules >= 1:3.2
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	rpmbuild(monoautodeps)
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libX11-devel
@@ -111,6 +111,7 @@ Summary(pl.UTF-8):	Wiązania libproxy dla Pythona
 Group:		Libraries/Python
 # uses libproxy shared library
 Requires:	%{name} = %{version}-%{release}
+Requires:	python-libs >= 1:2.5
 
 %description -n python-libproxy
 libproxy Python bindings.
@@ -124,6 +125,7 @@ Summary(pl.UTF-8):	Wiązania libproxy dla Pythona 3
 Group:		Libraries/Python
 # uses libproxy shared library
 Requires:	%{name} = %{version}-%{release}
+Requires:	python3-libs >= 1:3.2
 
 %description -n python3-libproxy
 libproxy Python 3 bindings.
@@ -220,6 +222,7 @@ echo 'set(NATUS_FOUND 0)' > libproxy/cmake/modules/pacrunner_natus.cmk
 %build
 install -d build
 cd build
+CXXFLAGS="%{rpmcxxflags} -std=c++11"
 %cmake .. \
 	-DLIB_INSTALL_DIR=%{_libdir} \
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
@@ -245,6 +248,9 @@ rm -rf $RPM_BUILD_ROOT
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_postclean
+
+%py3_comp $RPM_BUILD_ROOT%{py3_sitescriptdir}
+%py3_ocomp $RPM_BUILD_ROOT%{py3_sitescriptdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -293,6 +299,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -n python3-libproxy
 %defattr(644,root,root,755)
 %{py3_sitescriptdir}/libproxy.py
+%{py3_sitescriptdir}/__pycache__/libproxy.cpython-*.py[co]
 
 %files -n vala-libproxy
 %defattr(644,root,root,755)
