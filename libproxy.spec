@@ -12,8 +12,6 @@
 %ifarch x32
 %undefine	with_mono
 %endif
-%include	/usr/lib/rpm/macros.perl
-%include	/usr/lib/rpm/macros.mono
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
