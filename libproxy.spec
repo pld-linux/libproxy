@@ -15,23 +15,24 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.15
-Release:	6
+Version:	0.4.17
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
 Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	21ebe5b4ea2a04f5f468bf5d08c40d2c
+# Source0-md5:	74af4aa1e7920f3b6117203d55a9c524
 Patch0:		%{name}-pac-modules.patch
 URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	NetworkManager-devel
 BuildRequires:	cmake >= 2.6
+BuildRequires:	dbus-devel
 BuildRequires:	glib2-devel >= 1:2.26
 %{?with_webkit:BuildRequires:	gtk-webkit4-devel >= 2.6}
-%{?with_mozjs:BuildRequires:	mozjs38-devel}
-BuildRequires:	libmodman-devel >= 2
-BuildRequires:	libstdc++-devel >= 6:4.7
+BuildRequires:	libstdc++-devel >= 6:7
 %{?with_mono:BuildRequires:	mono-csharp}
+%{?with_mozjs:BuildRequires:	mozjs68-devel}
+%{?with_natus:BuildRequires:	natus-devel}
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.5
@@ -40,7 +41,7 @@ BuildRequires:	python3-devel >= 1:3.2
 BuildRequires:	python3-modules >= 1:3.2
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.714
+BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	rpmbuild(monoautodeps)
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libX11-devel
@@ -136,9 +137,7 @@ Summary:	Vala bindings for libproxy API
 Summary(pl.UTF-8):	Wiązania API libproxy dla języka Vala
 Group:		Development/Languages
 Requires:	%{name}-devel = %{version}-%{release}
-%if "%{_rpmversion}" >= "5"
-BuildArch:	noarch
-%endif
+%{?noarchpackage}
 
 %description -n vala-libproxy
 Vala bindings for libproxy API.
@@ -147,67 +146,91 @@ Vala bindings for libproxy API.
 Wiązania API libproxy dla języka Vala.
 
 %package networkmanager
-Summary:	NetworkManager plugin for libproxy
-Summary(pl.UTF-8):	Wtyczka NetworkManager dla libproxy
+Summary:	NetworkManager network plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka sieci NetworkManager dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description networkmanager
-NetworkManager configuration plugin for libproxy.
+NetworkManager network plugin for libproxy, to query NetworkManager
+about network configuration changes.
 
 %description networkmanager -l pl.UTF-8
-Wtyczka konfiguracji NetworkManager dla libproxy.
+Wtyczka sieci NetworkManager dla libproxy, do odpytywania
+NetworkManagera o zmiany konfiguracji sieci.
 
 %package gnome
-Summary:	GNOME plugin for libproxy
-Summary(pl.UTF-8):	Wtyczka GNOME dla libproxy
+Summary:	GNOME configuration plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka konfiguracji GNOME dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib2 >= 1:2.26
 
 %description gnome
-GNOME (GConf) configuration plugin for libproxy.
+GNOME (gsettings) configuration plugin for libproxy, to query GNOME
+about proxy settings.
 
 %description gnome -l pl.UTF-8
-Wtyczka konfiguracji GNOME (GConf) dla libproxy.
+Wtyczka konfiguracji GNOME (gsettings) dla libproxy, do odczytu
+ustawień proxy z GNOME.
 
 %package kde
-Summary:	KDE plugin for libproxy
-Summary(pl.UTF-8):	Wtyczka KDE dla libproxy
+Summary:	KDE configuration plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka konfiguracji KDE dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 #Requires:	kreadconfig (KDE4) or kreadconfig5 (KF5)
 
 %description kde
-KDE configuration plugin for libproxy.
+KDE configuration plugin for libproxy, to query KDE about proxy
+settings.
 
 %description kde -l pl.UTF-8
-Wtyczka konfiguracji KDE dla libproxy
+Wtyczka konfiguracji KDE dla libproxy, do odczytu ustawień proxy z
+KDE.
+
+%package pacrunner
+Summary:	Pacrunner configuration plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka konfiguracji pacrunner dla libproxy
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description pacrunner
+Pacrunner configuration plugin for libproxy, to query pacrunner about
+proxy settings.
+
+%description pacrunner -l pl.UTF-8
+Wtyczka konfiguracji pacrunner dla libproxy, do odczytu ustawień proxy
+z pacrunnera.
 
 %package mozjs
-Summary:	MozJS plugin for libproxy
-Summary(pl.UTF-8):	Wtyczka MozJS dla libproxy
+Summary:	MozJS pacrunner plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka pacrunner MozJS dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description mozjs
-MozJS (XULrunner/JavaScript) configuration plugin for libproxy.
+MozJS (XULrunner/JavaScript) pacrunner plugin for libproxy, to get
+proxy from WPAD/PAC script using MozJS engine.
 
 %description mozjs -l pl.UTF-8
-Wtyczka konfiguracji MozJS (XULrunner/JavaScript) dla libproxy.
+Wtyczka pacrunner MozJS (XULrunner/JavaScript) dla libproxy, do
+pobierania proxy ze skryptu WPAD/PAC przy użyciu silnika MozJS.
 
 %package webkit
-Summary:	WebKit plugin for libproxy
-Summary(pl.UTF-8):	Wtyczka WebKit dla libproxy
+Summary:	WebKit pacrunner plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka pacrunner WebKit dla libproxy
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	gtk-webkit4 >= 2.6
 
 %description webkit
-WebKit (JavaScriptCore) configuration plugin for libproxy.
+WebKit (JavaScriptCore) pacrunner plugin for libproxy, to get proxy
+from WPAD/PAC script using WebKit engine.
 
 %description webkit -l pl.UTF-8
-Wtyczka konfigracji WebKit (JavaScriptCore) dla libproxy.
+Wtyczka pacrunner WebKit (JavaScriptCore) dla libproxy, do pobierania
+ustawień proxy ze skryptu WPAD/PAC, przy użyciu silnika WebKit.
 
 %prep
 %setup -q
@@ -220,11 +243,9 @@ echo 'set(NATUS_FOUND 0)' > libproxy/cmake/modules/pacrunner_natus.cmk
 %build
 install -d build
 cd build
-CXXFLAGS="%{rpmcxxflags} -std=c++11"
 %cmake .. \
 	-DLIB_INSTALL_DIR=%{_libdir} \
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
-	-DFORCE_SYSTEM_LIBMODMAN=ON \
 	-DPERL_VENDORINSTALL=ON \
 	-DPYTHON2_SITEPKG_DIR=%{py_sitescriptdir} \
 	-DPYTHON3_SITEPKG_DIR=%{py3_sitescriptdir} \
@@ -317,6 +338,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_kde.so
 %endif
+
+%files pacrunner
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_pacrunner.so
 
 %if %{with mozjs}
 %files mozjs
