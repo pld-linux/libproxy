@@ -111,6 +111,7 @@ Group:		Libraries/Python
 # uses libproxy shared library
 Requires:	%{name} = %{version}-%{release}
 Requires:	python-libs >= 1:2.5
+BuildArch:	noarch
 
 %description -n python-libproxy
 libproxy Python bindings.
@@ -125,6 +126,7 @@ Group:		Libraries/Python
 # uses libproxy shared library
 Requires:	%{name} = %{version}-%{release}
 Requires:	python3-libs >= 1:3.2
+BuildArch:	noarch
 
 %description -n python3-libproxy
 libproxy Python 3 bindings.
