@@ -42,7 +42,6 @@ BuildRequires:	python3-modules >= 1:3.2
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.752
-BuildRequires:	rpmbuild(monoautodeps)
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXmu-devel
