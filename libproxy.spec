@@ -138,7 +138,7 @@ Summary:	Vala bindings for libproxy API
 Summary(pl.UTF-8):	Wiązania API libproxy dla języka Vala
 Group:		Development/Languages
 Requires:	%{name}-devel = %{version}-%{release}
-%{?noarchpackage}
+BuildArch:	noarch
 
 %description -n vala-libproxy
 Vala bindings for libproxy API.
