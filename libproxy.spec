@@ -4,6 +4,7 @@
 #
 # Conditional build:
 %bcond_without	kde		# KDE 4/5 config plugin
+%bcond_without	duktape		# Duktape pacrunner plugin
 %bcond_without	mozjs		# MozJS pacrunner plugin
 %bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
 %bcond_without	webkit		# WebKit pacrunner plugin
@@ -15,18 +16,19 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.4.17
-Release:	7
+Version:	0.4.18
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
 Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	74af4aa1e7920f3b6117203d55a9c524
+# Source0-md5:	21d13e5d699c3c21ab5eb2260ed9247a
 Patch0:		%{name}-pac-modules.patch
 URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	NetworkManager-devel
 BuildRequires:	cmake >= 2.6
 BuildRequires:	dbus-devel
+%{?with_duktape:BuildRequires:	duktape-devel}
 BuildRequires:	glib2-devel >= 1:2.26
 %{?with_webkit:BuildRequires:	gtk-webkit4-devel >= 2.6}
 BuildRequires:	libstdc++-devel >= 6:7
@@ -59,7 +61,7 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libproxy
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	libstdc++-devel
-Obsoletes:	libproxy-static
+Obsoletes:	libproxy-static < 0.4
 
 %description devel
 Header files for libproxy library.
@@ -204,6 +206,20 @@ proxy settings.
 Wtyczka konfiguracji pacrunner dla libproxy, do odczytu ustawień proxy
 z pacrunnera.
 
+%package duktape
+Summary:	Duktape pacrunner plugin for libproxy
+Summary(pl.UTF-8):	Wtyczka pacrunner Duktape dla libproxy
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description duktape
+Duktape pacrunner plugin for libproxy, to get proxy from WPAD/PAC
+script using Duktype engine.
+
+%description duktape -l pl.UTF-8
+Wtyczka pacrunner Duktape dla libproxy, do pobierania proxy ze skryptu
+WPAD/PAC przy użyciu silnika Duktype.
+
 %package mozjs
 Summary:	MozJS pacrunner plugin for libproxy
 Summary(pl.UTF-8):	Wtyczka pacrunner MozJS dla libproxy
@@ -251,8 +267,9 @@ cd build
 	-DPYTHON2_SITEPKG_DIR=%{py_sitescriptdir} \
 	-DPYTHON3_SITEPKG_DIR=%{py3_sitescriptdir} \
 	%{?with_mono:-DWITH_DOTNET=ON -DGMCS_EXECUTABLE=/usr/bin/mcs} \
+	%{!?with_duktape:-DWITH_DUKTAPE=OFF} \
 	%{!?with_kde:-DWITH_KDE=OFF} \
-	%{!?with_mozjs:-DWITH_MOZJS=OFF} \
+	%{?with_mozjs:-DWITH_MOZJS=ON} \
 	-DWITH_VALA=ON \
 	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
 	%{?with_webkit:-DWITH_WEBKIT3=ON}
@@ -343,6 +360,12 @@ rm -rf $RPM_BUILD_ROOT
 %files pacrunner
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/config_pacrunner.so
+
+%if %{with duktape}
+%files duktape
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/pacrunner_duktape.so
+%endif
 
 %if %{with mozjs}
 %files mozjs
