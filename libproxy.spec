@@ -3,12 +3,14 @@
 # - ruby binding (not finished as of 0.4.8 - no buildsystem)
 #
 # Conditional build:
-%bcond_without	kde		# KDE 4/5 config plugin
 %bcond_without	duktape		# Duktape pacrunner plugin
+%bcond_without	kde		# KDE 4/5 config plugin
+%bcond_without	mono		# Mono C# bindings
 %bcond_without	mozjs		# MozJS pacrunner plugin
 %bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
+%bcond_without	python2		# Python 2.x bindings
+%bcond_without	python3		# Python 3.x bindings
 %bcond_without	webkit		# WebKit pacrunner plugin
-%bcond_without	mono		# Mono C# bindings
 
 %ifarch x32
 %undefine	with_mono
@@ -37,10 +39,10 @@ BuildRequires:	libstdc++-devel >= 6:7
 %{?with_natus:BuildRequires:	natus-devel}
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	pkgconfig
-BuildRequires:	python-devel >= 1:2.5
-BuildRequires:	python-modules >= 1:2.5
-BuildRequires:	python3-devel >= 1:3.2
-BuildRequires:	python3-modules >= 1:3.2
+%{?with_python2:BuildRequires:	python-devel >= 1:2.5}
+%{?with_python2:BuildRequires:	python-modules >= 1:2.5}
+%{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
+%{?with_python3:BuildRequires:	python3-modules >= 1:3.2}
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.752
@@ -265,7 +267,9 @@ cd build
 	-DLIBEXEC_INSTALL_DIR=%{_libdir}/libproxy \
 	-DPERL_VENDORINSTALL=ON \
 	-DPYTHON2_SITEPKG_DIR=%{py_sitescriptdir} \
+	%{!?with_python2:-DPYTHON2=OFF} \
 	-DPYTHON3_SITEPKG_DIR=%{py3_sitescriptdir} \
+	%{!?with_python3:-DPYTHON3=OFF} \
 	%{?with_mono:-DWITH_DOTNET=ON -DGMCS_EXECUTABLE=/usr/bin/mcs} \
 	%{!?with_duktape:-DWITH_DUKTAPE=OFF} \
 	%{!?with_kde:-DWITH_KDE=OFF} \
@@ -282,12 +286,16 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} -C build install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%if %{with python2}
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_postclean
+%endif
 
+%if %{with python3}
 %py3_comp $RPM_BUILD_ROOT%{py3_sitescriptdir}
 %py3_ocomp $RPM_BUILD_ROOT%{py3_sitescriptdir}
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -329,14 +337,18 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{perl_vendorarch}/auto/Net/Libproxy
 %attr(755,root,root) %{perl_vendorarch}/auto/Net/Libproxy/Libproxy.so
 
+%if %{with python2}
 %files -n python-libproxy
 %defattr(644,root,root,755)
 %{py_sitescriptdir}/libproxy.py[co]
+%endif
 
+%if %{with python2}
 %files -n python3-libproxy
 %defattr(644,root,root,755)
 %{py3_sitescriptdir}/libproxy.py
 %{py3_sitescriptdir}/__pycache__/libproxy.cpython-*.py[co]
+%endif
 
 %files -n vala-libproxy
 %defattr(644,root,root,755)
