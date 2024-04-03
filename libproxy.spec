@@ -5,6 +5,7 @@
 # Conditional build:
 %bcond_without	duktape		# Duktape pacrunner plugin
 %bcond_without	kde		# KDE 4/5 config plugin
+%bcond_without	nm		# NetworkManager pacrunner plugin
 %bcond_without	mono		# Mono C# bindings
 %bcond_without	mozjs		# MozJS pacrunner plugin
 %bcond_with	natus		# Natus pacrunner plugin [doesn't build with natus 0.2.1]
@@ -27,7 +28,7 @@ Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{versi
 # Source0-md5:	21d13e5d699c3c21ab5eb2260ed9247a
 Patch0:		%{name}-pac-modules.patch
 URL:		https://libproxy.github.io/libproxy/
-BuildRequires:	NetworkManager-devel
+%{?with_nm:BuildRequires:	NetworkManager-devel}
 BuildRequires:	cmake >= 2.6
 BuildRequires:	dbus-devel
 %{?with_duktape:BuildRequires:	duktape-devel}
@@ -274,6 +275,7 @@ cd build
 	%{!?with_duktape:-DWITH_DUKTAPE=OFF} \
 	%{!?with_kde:-DWITH_KDE=OFF} \
 	%{?with_mozjs:-DWITH_MOZJS=ON} \
+	%{!?with_nm:-DWITH_NM=OFF} \
 	-DWITH_VALA=ON \
 	%{!?with_webkit:-DWITH_WEBKIT=OFF} \
 	%{?with_webkit:-DWITH_WEBKIT3=ON}
@@ -354,9 +356,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_datadir}/vala/vapi/libproxy-1.0.vapi
 
+%if %{with kde}
 %files networkmanager
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/network_networkmanager.so
+%endif
 
 %files gnome
 %defattr(644,root,root,755)
