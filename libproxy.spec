@@ -356,7 +356,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_datadir}/vala/vapi/libproxy-1.0.vapi
 
-%if %{with kde}
+%if %{with nm}
 %files networkmanager
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/modules/network_networkmanager.so
