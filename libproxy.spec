@@ -1,7 +1,6 @@
-# TODO:
-# - apidocs subpackage
 #
 # Conditional build:
+%bcond_without	apidocs		# API documentation
 %bcond_without	duktape		# Duktape pacrunner plugin
 %bcond_without	kde		# KDE 4/5 config plugin
 
@@ -16,17 +15,22 @@ Group:		Libraries
 Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	11fd35c17e0ae017bae764fae1651973
 URL:		https://libproxy.github.io/libproxy/
+BuildRequires:	curl-devel
 BuildRequires:	dbus-devel
 %{?with_duktape:BuildRequires:	duktape-devel}
-BuildRequires:	glib2-devel >= 1:2.26
+%{?with_apidocs:BuildRequires:	gi-docgen}
+BuildRequires:	glib2-devel >= 1:2.71.3
+BuildRequires:	gsettings-desktop-schemas-devel
 BuildRequires:	libstdc++-devel >= 6:7
-BuildRequires:	meson
+BuildRequires:	meson >= 0.59.0
+BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXmu-devel
-Requires:	glib2 >= 1:2.26
+Requires:	glib2 >= 1:2.71.3
 Obsoletes:	dotnet-libproxy-sharp < 0.5.9
 Obsoletes:	dotnet-libproxy-sharp-devel < 0.5.9
 Obsoletes:	libproxy-duktape < 0.5.9
@@ -52,6 +56,7 @@ Summary:	Header files for libproxy library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libproxy
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	glib2-devel >= 1:2.71.3
 Requires:	libstdc++-devel
 Obsoletes:	libproxy-static < 0.4
 
@@ -74,14 +79,26 @@ Vala bindings for libproxy API.
 %description -n vala-libproxy -l pl.UTF-8
 Wiązania API libproxy dla języka Vala.
 
+%package apidocs
+Summary:	API documentation for libproxy library
+Summary(pl.UTF-8):	Dokumentacja API biblioteki libproxy
+Group:		Documentation
+BuildArch:	noarch
+
+%description apidocs
+API documentation for libproxy library.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API biblioteki libproxy.
+
 %prep
 %setup -q
-#%patch0 -p1
 
 %build
 %meson build \
-	%{!?with_duktape:-Dpacrunner-duktape=false} \
 	%{!?with_kde:-Dconfig-kde=false} \
+	%{!?with_apidocs:-Ddocs=false} \
+	%{!?with_duktape:-Dpacrunner-duktape=false} \
 	-Drelease=true \
 	-Dvapi=true
 
@@ -92,7 +109,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %ninja_install -C build
 
-%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/libproxy-1.0
+%if %{with apidocs}
+install -d $RPM_BUILD_ROOT%{_gidocdir}
+%{__mv} $RPM_BUILD_ROOT%{_docdir}/libproxy-1.0 $RPM_BUILD_ROOT%{_gidocdir}
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -122,3 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_datadir}/vala/vapi/libproxy-1.0.vapi
 %{_datadir}/vala/vapi/libproxy-1.0.deps
+
+%if %{with apidocs}
+%files apidocs
+%defattr(644,root,root,755)
+%{_gidocdir}/libproxy-1.0
+%endif
