@@ -16,20 +16,18 @@ Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{versi
 # Source0-md5:	11fd35c17e0ae017bae764fae1651973
 URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	curl-devel
-BuildRequires:	dbus-devel
 %{?with_duktape:BuildRequires:	duktape-devel}
 %{?with_apidocs:BuildRequires:	gi-docgen}
 BuildRequires:	glib2-devel >= 1:2.71.3
+BuildRequires:	gobject-introspection-devel
 BuildRequires:	gsettings-desktop-schemas-devel
-BuildRequires:	libstdc++-devel >= 6:7
 BuildRequires:	meson >= 0.59.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	rpm-build >= 4.6
-BuildRequires:	rpmbuild(macros) >= 1.752
+BuildRequires:	rpmbuild(macros) >= 2.029
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libX11-devel
-BuildRequires:	xorg-lib-libXmu-devel
+BuildRequires:	vala
 Requires:	glib2 >= 1:2.71.3
 Obsoletes:	dotnet-libproxy-sharp < 0.5.9
 Obsoletes:	dotnet-libproxy-sharp-devel < 0.5.9
