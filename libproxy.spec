@@ -25,7 +25,7 @@ BuildRequires:	meson >= 0.59.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	rpm-build >= 4.6
-BuildRequires:	rpmbuild(macros) >= 2.029
+BuildRequires:	rpmbuild(macros) >= 2.042
 BuildRequires:	sed >= 4.0
 BuildRequires:	vala
 Requires:	glib2 >= 1:2.71.3
@@ -93,19 +93,19 @@ Dokumentacja API biblioteki libproxy.
 %setup -q
 
 %build
-%meson build \
+%meson \
 	%{!?with_kde:-Dconfig-kde=false} \
 	%{!?with_apidocs:-Ddocs=false} \
 	%{!?with_duktape:-Dpacrunner-duktape=false} \
 	-Drelease=true \
 	-Dvapi=true
 
-%ninja_build -C build
+%meson_build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ninja_install -C build
+%meson_install
 
 %if %{with apidocs}
 install -d $RPM_BUILD_ROOT%{_gidocdir}
