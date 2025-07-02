@@ -7,13 +7,13 @@
 Summary:	Library for automatic proxy configuration management
 Summary(pl.UTF-8):	Biblioteka do automatycznego zarządzania konfiguracją proxy
 Name:		libproxy
-Version:	0.5.9
-Release:	2
+Version:	0.5.10
+Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 #Source0Download: https://github.com/libproxy/libproxy/releases
 Source0:	https://github.com/libproxy/libproxy/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	11fd35c17e0ae017bae764fae1651973
+# Source0-md5:	efb82820b5b914ebff92c0c7b06cb1e0
 URL:		https://libproxy.github.io/libproxy/
 BuildRequires:	curl-devel
 %{?with_duktape:BuildRequires:	duktape-devel}
@@ -120,7 +120,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README.md
+%doc README.md SECURITY.md
 %attr(755,root,root) %{_bindir}/proxy
 %attr(755,root,root) %{_libdir}/libproxy.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libproxy.so.1
